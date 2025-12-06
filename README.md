@@ -1,6 +1,6 @@
-# Seeed XIAO ESP32‑C6 ESPHome Builder Package
+# Seeed XIAO ESP32‑C6 ESPHome Device Builder Package
 
-This repository contains a reusable **ESPHome Builder package** for the Seeed XIAO ESP32‑C6 (esp32c6) boards. The project provides a shared base configuration package that can be included in device YAMLs to keep device files concise and consistent. The configuration is tailored for Home Assistant Bluetooth proxy and scanning functionality. I use it with the "Bermuda BLE Trilateration" HACS add-on for room-level presence detection. 
+This repository contains a reusable **ESPHome Device Builder package** for the Seeed XIAO ESP32‑C6 (esp32c6) boards. The project provides a shared base configuration package that can be included in device YAMLs to keep device files concise and consistent. The configuration is tailored for Home Assistant Bluetooth proxy and scanning functionality. I use it with the "Bermuda BLE Trilateration" HACS add-on for room-level presence detection. 
 
 Quick overview
 
@@ -51,9 +51,9 @@ What the base config provides:
 
 - Antenna control: a template switch manages two outputs (`ant_gpio3`, `ant_gpio14`) defined in the base.
 
-## Using with ESPHome Builder
+## Using with ESPHome Device Builder
 
-This is an **ESPHome Builder package** designed to work seamlessly with the ESPHome Builder tool in Home Assistant:
+This is an **ESPHome Device Builder package** designed to work seamlessly with the ESPHome Device Builder tool in Home Assistant:
 
 1. Install the ESPHome and ESPHome Device Builder add-ons from the Home Assistant Add-on Store
 2. In your ESPHome configuration directory, create a `common` folder:
