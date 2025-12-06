@@ -45,7 +45,7 @@ What the base config provides:
 
 - Wi‑Fi: uses `!secret` for `wifi_ssid`, `wifi_password`, and `wifi_captive`; provides fallback captive AP settings.
 
-- BLE: enables BLE scanning and Bluetooth proxying.
+- BLE: enables BLE scanning and Bluetooth proxying with optimized scan parameters (211ms interval, 180ms window, continuous scanning) for accurate presence detection.
 
 - Sensors: uptime, internal temperature, Wi‑Fi signal, Wi‑Fi info, and SNTP time.
 
