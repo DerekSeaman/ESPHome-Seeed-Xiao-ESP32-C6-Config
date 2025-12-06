@@ -19,10 +19,10 @@ logger:
   baud_rate: 115200
   hardware_uart: USB_SERIAL_JTAG
 
+# Status LED behavior: Solid = all OK, slow blink = Wi-Fi but no API client, fast blink = no Wi-Fi
 status_led:
   pin:
     number: GPIO15
-    inverted: true
 
 api:
   encryption:

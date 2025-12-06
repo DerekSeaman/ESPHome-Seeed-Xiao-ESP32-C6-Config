@@ -27,7 +27,7 @@ Key sections and what they do
 
 - `status_led`:
 
-  - Configures the board LED pin and whether it's inverted. This shows device status on boot and at runtime.
+  - Configures the board LED pin (GPIO15). LED behavior: solid = all OK, slow blink = Wi-Fi connected but no API client, fast blink = no Wi-Fi.
 
 - `api`:
 
