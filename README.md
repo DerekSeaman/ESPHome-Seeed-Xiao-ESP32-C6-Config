@@ -12,7 +12,7 @@ Quick overview
 
   - `examples/common/Seeed xiao ESP32-c6 base.yaml` — shared base configuration (board, wifi, API/OTA, sensors, antenna outputs).
 
-![Seeed XIAO ESP32-C6 PCB](docs/seeed c6 pcb.jpg)
+![Seeed XIAO ESP32-C6 PCB](docs/seeed%20c6%20pcb.jpg)
 
 ## How to use the base package
 
