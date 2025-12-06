@@ -12,6 +12,8 @@ Quick overview
 
   - `examples/common/Seeed xiao ESP32-c6 base.yaml` — shared base configuration (board, wifi, API/OTA, sensors, antenna outputs).
 
+![Seeed XIAO ESP32-C6 PCB](docs/seeed c6 pcb.jpg)
+
 ## How to use the base package
 
 The generic device YAML includes the ESP32-C6 base configuration via `packages` and provide substitutions:
