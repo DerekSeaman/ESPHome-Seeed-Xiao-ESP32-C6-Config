@@ -76,7 +76,18 @@ This is an **ESPHome Device Builder package** designed to work seamlessly with t
    - Initial upload to your ESP32-C6 device
 6. The device will automatically be discovered by Home Assistant
 
-**Note:** The base configuration uses `!secret` references for Wi-Fi credentials, which ESPHome Builder manages automatically. You only need to provide the `api_key` and `ota_password` substitutions in your device YAML. To get fresh API and OTA keys, I suggest creating a new device in ESPHome Device Builder (using any hardware model), then replace all of the YAML with my device file but re-use the fresh API/OTA keys. 
+**Note:** The base configuration uses `!secret` references for Wi-Fi credentials, which ESPHome Builder manages automatically. You only need to provide the `api_key` and `ota_password` substitutions in your device YAML. To get fresh API and OTA keys, I suggest creating a new device in ESPHome Device Builder (using any hardware model), then replace all of the YAML with my device file but re-use the fresh API/OTA keys.
+
+## Status LED Patterns
+
+The onboard LED (GPIO15) provides visual feedback about the device state:
+
+| Pattern | Meaning |
+|---------|---------|
+| Solid ON | Everything OK - WiFi connected, API connected with active client |
+| Slow blink (~1Hz) | Warning - WiFi connected but API client not connected/subscribed |
+| Fast blink (~2-3Hz) | Error - No WiFi connection |
+| Very fast blink (~10Hz) | Critical error during boot or OTA in progress |
 
 ## ESPHome Device Page
 
