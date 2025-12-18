@@ -17,9 +17,11 @@ Key sections and what they do
 
   - `framework: esp-idf` and `sdkconfig_options`: sets low-level SDK flags (here enabling future Wi‑Fi 6 related options). Leave these unless you need to change SDK behaviour.
 
-- `esphome` -> `on_boot`:
+- `esphome`:
 
-  - Runs actions when the device boots. The base toggles GPIO outputs used for antenna selection (turning the external antenna on/off). If you add hardware that uses these pins, be aware of these actions.
+  - `name: ${device_name}` and `friendly_name: ${friendly_name}`: the base config now includes these, so device YAMLs no longer need to define the `esphome:` section — just provide the substitutions.
+
+  - `on_boot`: runs actions when the device boots. The base toggles GPIO3 and GPIO14 outputs used for antenna selection via the FM8625H RF switch (turning the external antenna on/off). If you add hardware that uses these pins, be aware of these actions.
 
 - `logger`:
 
@@ -43,6 +45,8 @@ Key sections and what they do
 
   - Domain and `use_address` set mDNS/host naming (e.g., `${device_name}.local`).
 
+  - `power_save_mode: NONE`: disables WiFi power saving for better BLE performance and more consistent connectivity.
+
   - `fast_connect` and `enable_on_boot` are convenience flags for reconnect behaviour.
 
   - `ssid`/`password` use `!secret` in the base file — ESPHome Builder manages these automatically.
@@ -63,11 +67,11 @@ Key sections and what they do
 
 - `switch` (External Antenna)
 
-  - A template switch controls two GPIO outputs (`ant_gpio3` and `ant_gpio14`) to toggle internal/external antenna. The outputs themselves are defined in the `output:` section.
+  - A template switch controls two GPIO outputs (`ant_gpio3` and `ant_gpio14`) to toggle internal/external antenna via the FM8625H RF switch. GPIO3 controls RF switch power (LOW = ON), GPIO14 selects antenna (HIGH = external U.FL, LOW = internal PCB). The outputs themselves are defined in the `output:` section.
 
 - `output`:
 
-  - Defines the actual GPIO outputs used for antenna selection. If you repurpose these pins, update this section and the `switch` actions accordingly.
+  - Defines the actual GPIO3 and GPIO14 outputs used for FM8625H RF switch antenna selection. If you repurpose these pins, update this section and the `switch` actions accordingly.
 
 Substitutions and secrets
 
@@ -86,13 +90,11 @@ How device YAMLs use the base
     api_key: "..."
     ota_password: "..."
 
-  esphome:
-    name: ${device_name}
-    friendly_name: ${friendly_name}
-
   packages:
     device: !include "common/Seeed xiao ESP32-c6 base.yaml"
   ```
+
+  Note: The `esphome:` section is no longer needed in device YAMLs — the base config now includes `name:` and `friendly_name:` using the substitutions you provide.
 
 Customization tips
 
