@@ -16,6 +16,8 @@ Quick overview
 
 ![Seeed XIAO ESP32-C6 PCB](docs/seeed%20c6%20pcb.jpg)
 
+**Note:** The Seeed XIAO ESP32-C6 board is officially supported in ESPHome as of version 2025.12.0 (December 2025). The board definition includes GPIO aliases and RF switch pin definitions (GPIO3 = `RF_SWITCH_EN`, GPIO14 = `RF_ANT_SELECT`).
+
 ## How to use the base package
 
 The generic device YAML includes the ESP32-C6 base configuration via `packages` and provides substitutions:
