@@ -133,7 +133,7 @@ switch:
       advertising:
           id: ble_advertising
           name: "BLE Advertising"
-          restore_mode: ALWAYS_OFF
+          restore_mode: ALWAYS_ON
 
     # External antenna selector (FM8625H RF switch control)
     - platform: template
