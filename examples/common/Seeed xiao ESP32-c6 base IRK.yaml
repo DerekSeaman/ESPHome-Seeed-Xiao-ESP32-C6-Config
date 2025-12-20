@@ -104,17 +104,17 @@ irk_capture:
 # Text sensors for Wi‑Fi info and IRK capture
 text_sensor:
     - platform: wifi_info
-      bssid:
-          name: "BSSID"
-          entity_category: diagnostic
       ip_address:
           name: "IP"
+          entity_category: diagnostic
+      mac_address:
+          name: "MAC"
           entity_category: diagnostic
       ssid:
           name: "SSID"
           entity_category: diagnostic
-      mac_address:
-          name: "MAC"
+      bssid:
+          name: "BSSID"
           entity_category: diagnostic
 
     - platform: irk_capture
@@ -168,6 +168,10 @@ text:
 
 # Basics + Wi‑Fi disconnect count (since boot)
 sensor:
+    - platform: internal_temperature
+      name: "Internal Temp"
+      entity_category: diagnostic
+
     - platform: uptime
       name: "Uptime"
       unit_of_measurement: "h"
@@ -175,9 +179,6 @@ sensor:
       update_interval: 60s
       filters:
           - lambda: return x / 3600.0;
-
-    - platform: internal_temperature
-      name: "Internal Temp"
       entity_category: diagnostic
 
     - platform: wifi_signal
