@@ -155,8 +155,8 @@ Here's what the IRK capture variant looks like in Home Assistant:
 The IRK capture device page shows:
 
 - **Device info**: Board type, firmware version, and MAC address
-- **Controls**: BLE Advertising toggle, BLE Device Name input, External Antenna toggle, and Generate New MAC button
-- **Sensors**: IRK (captured Identity Resolving Key) and Device MAC (paired device address)
+- **Controls**: BLE Advertising toggle, BLE Device Name input, BLE Profile selector, External Antenna toggle, and Generate New MAC button
+- **Sensors**: Device MAC (paired device address), Effective MAC (current BLE advertising address), and IRK (captured Identity Resolving Key)
 - **Configuration**: Firmware management and OTA updates
 - **Diagnostic**: BSSID, internal temperature, IP address, MAC address, SSID, uptime, Wi-Fi disconnects (since boot), and Wi-Fi RSSI
 
