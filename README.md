@@ -83,7 +83,7 @@ packages:
 - Uses **ESP-IDF framework** with NimBLE stack (native BLE support for IRK capture)
 - Bluetooth proxy and BLE tracker are disabled to avoid conflicts with IRK capture component
 - Includes IRK-specific text sensors, switches, and buttons
-- Advertises as a BLE Heart Rate Sensor to trigger pairing with iPhone, Apple Watch, and Android devices
+- Advertises as a BLE Heart Rate Sensor (Apple) or Keyboard (Android) to trigger pairing
 - Automatically captures and publishes IRK keys during the pairing process
 
 **How it works:**
