@@ -24,6 +24,10 @@ esp32:
 esphome:
     name: ${device_name}
     friendly_name: ${friendly_name}
+    project:
+        name: "DerekSeaman.irk-capture"
+        version: "1.5.1"
+    project_url: "https://github.com/DerekSeaman/irk-capture"
     on_boot:
         priority: -10
         then:
