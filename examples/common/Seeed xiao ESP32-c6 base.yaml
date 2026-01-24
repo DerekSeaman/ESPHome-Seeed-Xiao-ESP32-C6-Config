@@ -167,7 +167,7 @@ sensor:
       entity_category: diagnostic
 
     - platform: template
-      name: "Wi‑F Disconnects (since boot)"
+      name: "Wi‑Fi Disconnects (since boot)"
       id: wifi_disconnects_since_boot_sensor
       entity_category: diagnostic
       accuracy_decimals: 0
