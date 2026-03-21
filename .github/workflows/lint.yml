@@ -35,7 +35,7 @@ jobs:
 
       # 2. Markdown Lint
       - name: Markdown Lint
-        uses: DavidAnson/markdownlint-cli2-action@v19
+        uses: DavidAnson/markdownlint-cli2-action@v22
         with:
           globs: "**/*.md"
           fix: true
