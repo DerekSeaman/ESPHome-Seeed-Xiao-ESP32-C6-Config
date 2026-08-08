@@ -1,32 +1,15 @@
+# Seeed XIAO ESP32-C6 hardware add-on: status LED + external antenna control (FM8625H RF switch).
+# Everything else (Wi-Fi, API, OTA, BLE/IRK capture) comes from the ESPHome Device Builder-generated
+# device YAML and the irk-capture package.
+
 esp32:
-    variant: esp32c6
-    board: seeed_xiao_esp32c6
     framework:
-        type: esp-idf
-        version: recommended
         sdkconfig_options:
-            # Enable Bluetooth and NimBLE, disable Bluedroid
-            CONFIG_BT_ENABLED: "y"
-            CONFIG_BT_BLUEDROID_ENABLED: "n"
-            CONFIG_BT_NIMBLE_ENABLED: "y"
-
-            # Roles (peripheral/broadcaster sufficient)
-            CONFIG_BT_NIMBLE_ROLE_PERIPHERAL: "y"
-            CONFIG_BT_NIMBLE_ROLE_BROADCASTER: "y"
-            CONFIG_BT_NIMBLE_ROLE_CENTRAL: "n"
-            CONFIG_BT_NIMBLE_ROLE_OBSERVER: "n"
-
-            # Security (bonding + LESC)
-            CONFIG_BT_NIMBLE_SECURITY_ENABLE: "y"
-            CONFIG_BT_NIMBLE_SM_LEGACY: "y"
-            CONFIG_BT_NIMBLE_SM_SC: "y"
+            # Wi-Fi 6 (802.11ax) support on the C6 radio
+            CONFIG_SOC_WIFI_HE_SUPPORT: y
+            CONFIG_ESP_WIFI_11AX_SUPPORT: y
 
 esphome:
-    name: ${device_name}
-    friendly_name: ${friendly_name}
-    project:
-        name: "derekseaman.irk-capture"
-        version: "1.5.6"
     on_boot:
         priority: -10
         then:
@@ -34,45 +17,8 @@ esphome:
             - output.turn_off: rf_switch_enable    # LOW -> RF switch power ON
             - output.turn_on: rf_antenna_select    # HIGH -> external antenna (U.FL)
 
-# IMPORTANT: Do NOT include esp32_ble:, esp32_ble_tracker:, or bluetooth_proxy: here.
-# The irk_capture component fully initializes and manages NimBLE itself.
-
 logger:
-    level: DEBUG
-    baud_rate: 115200
     hardware_uart: USB_SERIAL_JTAG
-
-api:
-    encryption:
-        key: ${api_key}
-    reboot_timeout: 15min
-
-ota:
-    - platform: esphome
-      password: ${ota_password}
-      version: 2
-
-wifi:
-    ssid: !secret wifi_ssid
-    password: !secret wifi_password
-    domain: .local
-    use_address: ${device_name}.local
-    power_save_mode: NONE
-    fast_connect: true
-    enable_on_boot: true
-    reboot_timeout: 10min
-    ap:
-        ssid: "${friendly_name} Fallback"
-        password: !secret wifi_captive
-        ap_timeout: 120s
-    on_disconnect:
-        then:
-            - lambda: |-
-                id(_wifi_disconnects_since_boot)++;
-
-captive_portal:
-
-mdns:
 
 # Status LED on Seeed XIAO ESP32-C6 (GPIO15, not inverted to match your working config)
 status_led:
@@ -90,61 +36,8 @@ output:
       id: rf_antenna_select
       pin: RF_ANT_SELECT
 
-# Pull irk_capture external component (ESP‑IDF NimBLE version)
-external_components:
-    - source:
-          type: git
-          url: https://github.com/DerekSeaman/irk-capture
-          ref: main
-      components: [irk_capture]
-      refresh: always
-
-# Configure the custom IRK capture component
-irk_capture:
-    id: irk
-    ble_name: "IRK Capture"
-    start_on_boot: true
-    continuous_mode: true
-    max_captures: 10
-
-# Text sensors for Wi‑Fi info and IRK capture
-text_sensor:
-    - platform: wifi_info
-      ip_address:
-          name: "IP"
-          entity_category: diagnostic
-      mac_address:
-          name: "MAC"
-          entity_category: diagnostic
-      ssid:
-          name: "SSID"
-          entity_category: diagnostic
-      bssid:
-          name: "BSSID"
-          entity_category: diagnostic
-
-    - platform: irk_capture
-      irk_capture_id: irk
-      last_irk:
-          name: "IRK"
-          id: last_irk
-      last_address:
-          name: "Device MAC"
-          id: last_addr
-      effective_mac:
-          name: "Effective MAC"
-          id: effective_mac
-
-# BLE advertising on/off (drives start/stop advertising)
+# External antenna selector (FM8625H RF switch control)
 switch:
-    - platform: irk_capture
-      irk_capture_id: irk
-      advertising:
-          id: ble_advertising
-          name: "BLE Advertising"
-          restore_mode: ALWAYS_ON
-
-    # External antenna selector (FM8625H RF switch control)
     - platform: template
       name: "External Antenna"
       optimistic: true
@@ -155,74 +48,3 @@ switch:
       turn_off_action:
           - output.turn_off: rf_switch_enable    # LOW -> RF switch power ON
           - output.turn_off: rf_antenna_select   # LOW -> internal antenna (PCB/RF1)
-
-# Buttons
-button:
-    - platform: irk_capture
-      irk_capture_id: irk
-      new_mac:
-          id: new_mac_btn
-          name: "Generate New MAC"
-    - platform: restart
-      name: "Restart Device"
-
-# Text input to change the BLE name dynamically
-text:
-    - platform: irk_capture
-      irk_capture_id: irk
-      ble_name:
-          id: ble_name_input
-          name: "BLE Device Name"
-          mode: text
-
-# BLE profile selection dropdown
-select:
-    - platform: irk_capture
-      irk_capture_id: irk
-      ble_profile:
-          id: ble_profile_select
-          name: "BLE Profile"
-
-# Basics + Wi‑Fi disconnect count (since boot)
-sensor:
-    - platform: internal_temperature
-      name: "Internal Temp"
-      entity_category: diagnostic
-
-    - platform: uptime
-      name: "Uptime"
-      unit_of_measurement: "h"
-      accuracy_decimals: 2
-      update_interval: 60s
-      filters:
-          - lambda: return x / 3600.0;
-      entity_category: diagnostic
-
-    - platform: wifi_signal
-      id: wifi_signal_dbm
-      name: "Wi‑Fi RSSI"
-      update_interval: 30s
-      entity_category: diagnostic
-
-    - platform: template
-      name: "Wi‑Fi Disconnects (since boot)"
-      id: wifi_disconnects_since_boot_sensor
-      entity_category: diagnostic
-      accuracy_decimals: 0
-      update_interval: 30s
-      lambda: |-
-          return id(_wifi_disconnects_since_boot);
-
-# Globals (since-boot only; not restored)
-globals:
-    - id: _wifi_disconnects_since_boot
-      type: int
-      restore_value: no
-      initial_value: '0'
-
-time:
-    - platform: sntp
-      id: sntp_time
-      servers:
-          - 0.pool.ntp.org
-          - 1.pool.ntp.org
