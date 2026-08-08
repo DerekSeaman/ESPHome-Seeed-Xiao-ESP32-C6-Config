@@ -1,7 +1,6 @@
-# Seeed XIAO ESP32-C6 hardware add-on: status LED, external antenna control (FM8625H RF switch),
-# and Wi-Fi diagnostics beyond what the irk-capture package exposes.
-# Everything else (Wi-Fi, API, OTA, BLE/IRK capture) comes from the ESPHome Device Builder-generated
-# device YAML and the irk-capture package.
+# Seeed XIAO ESP32-C6 hardware add-on: status LED + external antenna control (FM8625H RF switch).
+# Everything else (Wi-Fi, API, OTA, BLE/IRK capture, Wi-Fi diagnostics) comes from the ESPHome
+# Device Builder-generated device YAML and the irk-capture package.
 
 esp32:
     # Explicit board ID (not just variant) so board-specific pin aliases
@@ -23,12 +22,6 @@ esphome:
 
 logger:
     hardware_uart: USB_SERIAL_JTAG
-
-wifi:
-    on_disconnect:
-        then:
-            - lambda: |-
-                id(_wifi_disconnects_since_boot)++;
 
 # Status LED on Seeed XIAO ESP32-C6 (GPIO15, not inverted to match your working config)
 status_led:
@@ -58,30 +51,3 @@ switch:
       turn_off_action:
           - output.turn_off: rf_switch_enable    # LOW -> RF switch power ON
           - output.turn_off: rf_antenna_select   # LOW -> internal antenna (PCB/RF1)
-
-# Extra Wi-Fi diagnostics not covered by the irk-capture package
-text_sensor:
-    - platform: wifi_info
-      mac_address:
-          name: "MAC"
-          entity_category: diagnostic
-      ssid:
-          name: "SSID"
-          entity_category: diagnostic
-
-sensor:
-    - platform: template
-      name: "Wi-Fi Disconnects (since boot)"
-      id: wifi_disconnects_since_boot_sensor
-      entity_category: diagnostic
-      accuracy_decimals: 0
-      update_interval: 30s
-      lambda: |-
-          return id(_wifi_disconnects_since_boot);
-
-# Since-boot only; not restored across reboots
-globals:
-    - id: _wifi_disconnects_since_boot
-      type: int
-      restore_value: no
-      initial_value: '0'
