@@ -3,6 +3,9 @@
 # device YAML and the irk-capture package.
 
 esp32:
+    # Explicit board ID (not just variant) so board-specific pin aliases
+    # like RF_SWITCH_EN / RF_ANT_SELECT resolve correctly.
+    board: seeed_xiao_esp32c6
     framework:
         sdkconfig_options:
             # Wi-Fi 6 (802.11ax) support on the C6 radio
