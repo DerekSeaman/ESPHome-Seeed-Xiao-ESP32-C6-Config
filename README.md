@@ -20,7 +20,7 @@ Quick overview
 
 ## Using with ESPHome Device Builder
 
-This is an **ESPHome Device Builder package** designed to work seamlessly with the ESPHome Device Builder tool in Home Assistant. Follow these steps to create a new device with the custom Seeed Studio XIAO ESP32-C6 configuration:
+This is an **ESPHome Device Builder package** designed to work seamlessly with the ESPHome Device Builder tool in Home Assistant. This has been tested with ESPHome Device Builder 2026.7.4. Follow these steps to create a new device with the custom Seeed Studio XIAO ESP32-C6 configuration:
 
 1. Install the **ESPHome Device Builder** add-on from the Home Assistant Add-on Store
 2. Go into the **ESPHome Device Builder** and in the upper right click on **+ Create device**
@@ -47,6 +47,8 @@ The Seeed Studio XIAO ESP32-C6 has an onboard ceramic antenna and a U.FL connect
 ## Bluetooth Proxy
 
 If you use the **proxy** configuration, your C6 will act as a Bluetooth proxy. I created three scan profiles: low, medium, and high. Depending on your needs, you can set the scan profile as needed. If you are using the proxy with room-level presence detection, medium or high is recommended. Otherwise, low should be sufficient and will use less Wi-Fi bandwidth.
+
+![BLE Scanner Profiles](docs/BLE-proxy.jpg)
 
 ## Status LED Patterns
 
