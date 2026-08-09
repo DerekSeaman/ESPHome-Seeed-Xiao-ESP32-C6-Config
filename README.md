@@ -16,7 +16,7 @@ Quick overview
 
 ![Seeed XIAO ESP32-C6 PCB](docs/seeed%20c6%20pcb.jpg)
 
-**Key feature:** The XIAO ESP32-C6 supports Wi-Fi 6 (802.11ax) at 2.4 GHz and includes a **software-controlled external antenna switch** (FM8625H RF switch), letting you choose between the onboard ceramic antenna and an external U.FL antenna at runtime — unlike the C5, whose antenna switching is hardware-managed with no GPIO control needed.
+**Key feature:** The XIAO ESP32-C6 supports Wi-Fi 6 (802.11ax) at 2.4 GHz and includes a **software-controlled external antenna switch** (FM8625H RF switch), letting you choose between the onboard ceramic antenna and an external U.FL antenna at runtime.
 
 ## Using with ESPHome Device Builder
 

@@ -7,10 +7,6 @@
 # BLE/IRK capture, MAC/SSID/RSSI diagnostics, restart button, globals, sntp time) is
 # intentionally left out here to avoid duplicating/conflicting with those.
 #
-# NOTE: esphome.on_boot is written as an explicit list (with a leading "-") rather than a bare
-# dict. The irk-capture package also declares its own esphome.on_boot as a list; packages: merges
-# list-type keys by concatenation, but only if BOTH sides are lists — a bare dict on either side
-# gets replaced wholesale instead of merged, silently dropping one of the two boot actions.
 
 esp32:
     # Explicit board ID (not just variant) so board-specific pin aliases like
