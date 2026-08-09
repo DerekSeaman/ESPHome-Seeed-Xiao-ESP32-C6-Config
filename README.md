@@ -32,6 +32,10 @@ This is an **ESPHome Device Builder package** designed to work seamlessly with t
 8. Depending on which version you want, modify **file:** as needed (proxy, base, IRK)
 9. Modify any other settings as needed, then install to your Seeed Studio XIAO ESP32-C6 device.
 
+Your configuration should look something like this.
+
+![YAML Example](docs/YAML-config.jpg)
+
 ## IRK Configuration Details
 
 I built a special C6 IRK configuration that is designed to be used with my IRK Capture package for ESPHome. It can be found at: [DerekSeaman/irk-capture](https://github.com/DerekSeaman/irk-capture). This eliminates some of the duplicate settings already built into my IRK Capture package and only adds the unique settings needed for the Seeed Studio XIAO ESP32-C6.
@@ -67,17 +71,3 @@ The device page shows:
 - **Controls**: BLE Scan Profile selector (Low/Medium/High) and External Antenna toggle
 - **Configuration**: Firmware management and OTA updates
 - **Diagnostic**: BSSID, internal temperature, IP address, MAC address, SSID, uptime, Wi-Fi Channel, Wi-Fi disconnects (since boot), and Wi-Fi RSSI
-
-## IRK Capture Device Page
-
-Here's what the IRK capture variant looks like in Home Assistant:
-
-![IRK Capture Device Page](docs/screenshot-irk.jpg)
-
-The IRK capture device page shows:
-
-- **Device info**: Board type, firmware version, and MAC address
-- **Controls**: BLE Advertising toggle, BLE Device Name input, BLE Profile selector, External Antenna toggle, and Generate New MAC button
-- **Sensors**: Device MAC (paired device address), Effective MAC (current BLE advertising address), and IRK (captured Identity Resolving Key)
-- **Configuration**: Firmware management and OTA updates
-- **Diagnostic**: BSSID, internal temperature, IP address, MAC address, SSID, uptime, Wi-Fi disconnects (since boot), and Wi-Fi RSSI
