@@ -1,0 +1,85 @@
+# Seeed XIAO ESP32-C6 hardware add-on for IRK capture: Wi-Fi 6 (2.4GHz) support, status LED,
+# external antenna control (FM8625H RF switch), and Wi-Fi channel diagnostics.
+# Intended to be added as a `packages:` entry alongside the generic irk-capture package
+# (https://github.com/DerekSeaman/irk-capture) on top of an ESPHome Device Builder-generated
+# device YAML. Everything the irk-capture package or the device YAML already provides
+# (logger level/baud_rate, api, wifi credentials/power/roaming/disconnect-tracking, mdns,
+# BLE/IRK capture, MAC/SSID/RSSI diagnostics, restart button, globals, sntp time) is
+# intentionally left out here to avoid duplicating/conflicting with those.
+#
+# NOTE: esphome.on_boot is written as an explicit list (with a leading "-") rather than a bare
+# dict. The irk-capture package also declares its own esphome.on_boot as a list; packages: merges
+# list-type keys by concatenation, but only if BOTH sides are lists — a bare dict on either side
+# gets replaced wholesale instead of merged, silently dropping one of the two boot actions.
+
+esp32:
+    # Explicit board ID (not just variant) so board-specific pin aliases like
+    # RF_SWITCH_EN / RF_ANT_SELECT resolve correctly.
+    board: seeed_xiao_esp32c6
+    framework:
+        sdkconfig_options:
+            # C6-specific: Wi-Fi 6 (802.11ax), 2.4GHz only (no 5GHz radio on this chip)
+            CONFIG_SOC_WIFI_HE_SUPPORT: "y"
+            CONFIG_ESP_WIFI_11AX_SUPPORT: "y"
+
+esphome:
+    includes:
+        - <esp_wifi.h>
+    on_boot:
+        - priority: -10
+          then:
+              # Enable external antenna by default (FM8625H RF switch)
+              - output.turn_off: rf_switch_enable    # LOW -> RF switch power ON
+              - output.turn_on: rf_antenna_select    # HIGH -> external antenna (U.FL)
+
+logger:
+    hardware_uart: USB_SERIAL_JTAG
+
+wifi:
+    enable_btm: true  # 802.11v BSS Transition Management (AP-coordinated roaming)
+    enable_rrm: true  # 802.11k Radio Resource Management (neighbor-assisted scanning)
+    on_connect:
+        then:
+            - component.update: wifi_channel_sensor
+
+# Status LED on Seeed XIAO ESP32-C6 (GPIO15, yellow USER LED)
+status_led:
+    pin:
+        number: GPIO15
+
+# External antenna control using ESPHome board aliases (FM8625H RF switch)
+# RF_SWITCH_EN (GPIO3) = RF switch power, RF_ANT_SELECT (GPIO14) = antenna selector
+output:
+    - platform: gpio
+      id: rf_switch_enable
+      pin: RF_SWITCH_EN
+
+    - platform: gpio
+      id: rf_antenna_select
+      pin: RF_ANT_SELECT
+
+switch:
+    - platform: template
+      name: "External Antenna"
+      optimistic: true
+      restore_mode: ALWAYS_ON
+      turn_on_action:
+          - output.turn_off: rf_switch_enable    # LOW -> RF switch power ON
+          - output.turn_on: rf_antenna_select    # HIGH -> external antenna (U.FL/RF2)
+      turn_off_action:
+          - output.turn_off: rf_switch_enable    # LOW -> RF switch power ON
+          - output.turn_off: rf_antenna_select   # LOW -> internal antenna (PCB/RF1)
+
+sensor:
+    - platform: template
+      name: "Wi-Fi Channel"
+      id: wifi_channel_sensor
+      entity_category: diagnostic
+      accuracy_decimals: 0
+      update_interval: 60s
+      lambda: |-
+          wifi_ap_record_t ap_info;
+          if (esp_wifi_sta_get_ap_info(&ap_info) == ESP_OK) {
+            return (float) ap_info.primary;
+          }
+          return NAN;

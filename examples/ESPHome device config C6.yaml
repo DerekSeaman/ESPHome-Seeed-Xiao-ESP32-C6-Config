@@ -1,8 +1,0 @@
-substitutions:
-  device_name: esphomec6-garage
-  friendly_name: Garage C6
-  api_key: "ZmFrZWFwaWtleWZha2VleGFtcGxlZmFrZWtleQ=="
-  ota_password: "ChangeMe!2025"
-
-packages:
-  device: !include "common/Seeed xiao ESP32-c6 base.yaml"

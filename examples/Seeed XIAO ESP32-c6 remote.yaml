@@ -1,0 +1,6 @@
+packages:
+  c6_device:
+    url: https://github.com/DerekSeaman/ESPHome-Seeed-Xiao-ESP32-C6-Config
+    ref: main
+    file: "examples/Seeed XIAO ESP32-c6 proxy.yaml"
+    refresh: always

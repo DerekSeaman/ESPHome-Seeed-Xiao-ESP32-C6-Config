@@ -1,0 +1,184 @@
+esp32:
+  board: seeed_xiao_esp32c6
+  framework:
+    type: esp-idf
+    sdkconfig_options:
+      CONFIG_SOC_WIFI_HE_SUPPORT: "y"
+      CONFIG_ESP_WIFI_11AX_SUPPORT: "y"
+
+esphome:
+  includes:
+    - <esp_wifi.h>
+  on_boot:
+    - priority: -10
+      then:
+        - output.turn_off: rf_switch_enable    # LOW -> RF switch power ON
+        - output.turn_on: rf_antenna_select    # HIGH -> external antenna (U.FL)
+
+logger:
+  level: DEBUG
+  baud_rate: 115200
+  hardware_uart: USB_SERIAL_JTAG
+
+api:
+  reboot_timeout: 15min
+
+wifi:
+  domain: .local
+  power_save_mode: NONE
+  fast_connect: true
+  enable_on_boot: true
+  reboot_timeout: 10min
+  enable_btm: true  # 802.11v BSS Transition Management (AP-coordinated roaming)
+  enable_rrm: true  # 802.11k Radio Resource Management (neighbor-assisted scanning)
+  ap:
+    ap_timeout: 120s
+  on_connect:
+    then:
+      - component.update: wifi_channel_sensor
+  on_disconnect:
+    then:
+      - lambda: |-
+          id(_wifi_disconnects_since_boot)++;
+
+mdns:
+
+# GPIO15 = USER LED (yellow) — solid ON when API connected, blinks when not
+status_led:
+  pin:
+    number: GPIO15
+
+# External antenna control using ESPHome board aliases (FM8625H RF switch)
+# RF_SWITCH_EN (GPIO3) = RF switch power, RF_ANT_SELECT (GPIO14) = antenna selector
+output:
+  - platform: gpio
+    id: rf_switch_enable
+    pin: RF_SWITCH_EN
+
+  - platform: gpio
+    id: rf_antenna_select
+    pin: RF_ANT_SELECT
+
+switch:
+  - platform: template
+    name: "External Antenna"
+    optimistic: true
+    restore_mode: ALWAYS_ON
+    turn_on_action:
+      - output.turn_off: rf_switch_enable    # LOW -> RF switch power ON
+      - output.turn_on: rf_antenna_select    # HIGH -> external antenna (U.FL/RF2)
+    turn_off_action:
+      - output.turn_off: rf_switch_enable    # LOW -> RF switch power ON
+      - output.turn_off: rf_antenna_select   # LOW -> internal antenna (PCB/RF1)
+
+esp32_ble_tracker:
+  id: ble_tracker
+  scan_parameters:
+    active: true
+    interval: 320ms
+    window: 90ms
+    continuous: true
+
+bluetooth_proxy:
+  active: true
+
+select:
+  - platform: template
+    name: "BLE Scan Profile"
+    id: sel_ble_scan_profile
+    optimistic: true
+    restore_value: true
+    initial_option: "Medium"
+    options:
+      - "Low"
+      - "Medium"
+      - "High"
+    set_action:
+      - lambda: |-
+          id(ble_tracker).stop_scan();
+          auto opt = id(sel_ble_scan_profile).current_option();
+          if (opt == "Low") {
+            id(ble_tracker).set_scan_interval(320);
+            id(ble_tracker).set_scan_window(30);
+          } else if (opt == "Medium") {
+            id(ble_tracker).set_scan_interval(320);
+            id(ble_tracker).set_scan_window(90);
+          } else {
+            id(ble_tracker).set_scan_interval(320);
+            id(ble_tracker).set_scan_window(160);
+          }
+          id(ble_tracker).start_scan();
+
+sensor:
+  - platform: internal_temperature
+    name: "Internal Temp"
+    entity_category: diagnostic
+
+  - platform: uptime
+    name: "Uptime"
+    unit_of_measurement: "h"
+    accuracy_decimals: 2
+    update_interval: 60s
+    filters:
+      - lambda: return x / 3600.0;
+    entity_category: diagnostic
+
+  - platform: wifi_signal
+    id: wifi_signal_dbm
+    name: "Wi-Fi RSSI"
+    update_interval: 30s
+    entity_category: diagnostic
+
+  - platform: template
+    name: "Wi-Fi Disconnects (since boot)"
+    id: wifi_disconnects_since_boot_sensor
+    entity_category: diagnostic
+    accuracy_decimals: 0
+    update_interval: 30s
+    lambda: |-
+      return id(_wifi_disconnects_since_boot);
+
+  - platform: template
+    name: "Wi-Fi Channel"
+    id: wifi_channel_sensor
+    entity_category: diagnostic
+    accuracy_decimals: 0
+    update_interval: 60s
+    lambda: |-
+      wifi_ap_record_t ap_info;
+      if (esp_wifi_sta_get_ap_info(&ap_info) == ESP_OK) {
+        return (float) ap_info.primary;
+      }
+      return NAN;
+
+text_sensor:
+  - platform: wifi_info
+    ip_address:
+      name: "IP"
+      entity_category: diagnostic
+    mac_address:
+      name: "MAC"
+      entity_category: diagnostic
+    ssid:
+      name: "SSID"
+      entity_category: diagnostic
+    bssid:
+      name: "BSSID"
+      entity_category: diagnostic
+
+button:
+  - platform: restart
+    name: "Restart Device"
+
+globals:
+  - id: _wifi_disconnects_since_boot
+    type: int
+    restore_value: no
+    initial_value: '0'
+
+time:
+  - platform: sntp
+    id: sntp_time
+    servers:
+      - 0.pool.ntp.org
+      - 1.pool.ntp.org
